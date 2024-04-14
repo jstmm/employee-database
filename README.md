@@ -1,8 +1,20 @@
 # Employee Database
 
-To build and run
+To build:
 
 ```bash
-$ ./build.sh
-$ ./bin/out
+$ ./configure.sh
+$ make
 ```
+
+To run:
+
+```bash
+$ ./bin/dbview
+```
+
+Options (for testing getopt for now):
+
+> -n              # set newfile to true
+>
+> -f <filepath>   # specify a file path
