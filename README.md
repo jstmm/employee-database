@@ -3,18 +3,20 @@
 To build:
 
 ```bash
-$ ./configure.sh
-$ make
+$ make # This adds create a test database with sample data
+$ ./bin/dbview -f <filepath> -n
 ```
 
 To run:
 
 ```bash
-$ ./bin/dbview
+$ ./bin/dbview -f <filepath>
 ```
 
-Options (for testing getopt for now):
+To add employee:
 
-> -n              # set newfile to true
->
-> -f <filepath>   # specify a file path
+```bash
+$ ./bin/dbview -f <filepath> -a "Joe,Blogg,4 Main Street,5,false"
+
+# Format is FirstName,LastName,Address,NbOfHours,IsManager
+```

@@ -1,21 +1,11 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <string.h>
-#include <unistd.h>
 #include <getopt.h>
 
-#include "file.h"
-#include "parse.h"
-
-typedef struct {
-    int id;
-    char first_name[64];
-    char last_name[64];
-    float income;
-    bool is_manager;
-} Employee;
+#include "../include/file.h"
+#include "../include/parse.h"
+#include "../include/common.h"
 
 void print_usage(char* argv[]) {
     printf("Usage: %s -n -f <database file>\n", argv[0]);
@@ -26,16 +16,24 @@ void print_usage(char* argv[]) {
 
 int main(int argc, char* argv[]) {
     char *filepath = NULL;
+    char *addstring = NULL;
     bool newfile = false;
-    int c;
+    int c = 0;
 
-    while ((c = getopt(argc, argv, "nf:")) != -1) {
+    int fd = -1;
+    struct dbheader_t* hdr = NULL;
+    struct employee_t* empl = NULL;
+
+    while ((c = getopt(argc, argv, "nf:a:")) != -1) {
         switch (c) {
         case 'n':
             newfile = true;
             break;
         case 'f':
             filepath = optarg;
+            break;
+        case 'a':
+            addstring = optarg;
             break;
         case '?':
             printf("Unknown option -%c\n", c);
@@ -48,65 +46,42 @@ int main(int argc, char* argv[]) {
     if (filepath == NULL) {
         printf("Filepath is a required argument\n");
         print_usage(argv);
+        return 0;
+    }
+    if (newfile) {
+        fd = create_db_file(filepath);
+        if (fd == STATUS_ERROR) {
+            printf("Unable to create database file\n");
+            return -1;
+        }
+        if (create_db_header(fd, &hdr) == STATUS_ERROR) {
+            printf("Failed to create database header\n");
+            return -1;
+        }
+    } else {
+        fd = open_db_file(filepath);
+        if (fd == STATUS_ERROR) {
+            printf("Unable to open database file\n");
+            return -1;
+        }
+        if (validate_db_header(fd, &hdr) == STATUS_ERROR) {
+            printf("Failed to validate database header\n");
+            return -1;
+        }
     }
 
-    printf("Newfile: %d\n", newfile);
-    printf("Filepath: %s\n", filepath);
-    return 0;
-
-    int fd = open_file_rw("employees.db"); // TODO: use value of filepath
-
-    struct stat db_stat = {0};
-    if (fstat(fd, &db_stat) < 0) {
-        perror("fstat");
-        close(fd);
-        return -1;
+    if (read_employees(fd, hdr, &empl) != STATUS_SUCCESS) {
+       printf("Failed to read employees");
+       return -1; 
     }
 
-    // Add header if database is new
-    if (db_stat.st_size == 0) {
-        DatabaseHeader header = {0};
-        write(fd, &header, sizeof(header));
+    if (addstring) {
+        hdr->employee_count++;
+        empl = realloc(empl, hdr->employee_count*(sizeof(struct employee_t)));
+        add_employee(hdr, empl, addstring);
     }
 
-    DatabaseHeader header = {0};
-
-    if (pread(fd, &header, sizeof(header), 0) != sizeof(header)) {
-        perror("read");
-        close(fd);
-        return -1;
-    }
-
-    // Add a new employee
-    int new_offset = sizeof(header) + (sizeof(Employee) * header.employees);
-
-    Employee new_employee = {
-        ++header.employees,
-        "Toto",
-        "Titi",
-        100000.00,
-        false
-    };
-
-    pwrite(fd, &new_employee, sizeof(new_employee), new_offset);
-    printf("[!] New employee added\n");
-
-    // Update metadata 
-    header.version += 1;
-    header.file_size = lseek(fd, 0, SEEK_END);
-    pwrite(fd, &header, sizeof(header), 0);
-    printf("[!] Header updated\n");
-
-    printf("-- Header --\n");
-    printf("DB Version: %u\n", header.version);
-    printf("DB Number of Employees: %u\n", header.employees);
-    printf("File length (recorded): %u Bytes\n", header.file_size);
-    
-    for (int i = 0; i < header.employees; i++) {
-        Employee employee = {};
-        pread(fd, &employee, sizeof(Employee), sizeof(header) + (i * sizeof(Employee)));
-        printf("#%d - %s\n", employee.id, employee.first_name);
-    }
+    output_file(fd, hdr, empl);
 
     close(fd);
     return 0;
