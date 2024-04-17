@@ -21,9 +21,9 @@ struct employee_t {
 int create_db_header(int fd, struct dbheader_t**);
 int validate_db_header(int fd, struct dbheader_t**);
 int read_employees(int fd, struct dbheader_t*, struct employee_t**);
-int add_employee(struct dbheader_t* hdr, struct employee_t* empl, char* addstring);
+int add_employee(struct dbheader_t*, struct employee_t*, char*);
 void output_file(int fd, struct dbheader_t*, struct employee_t*);
-
-int parse_file_header(int fd, int*);
+void list_employees(struct dbheader_t*, struct employee_t*);
+int remove_employee(struct dbheader_t*, struct employee_t*, char);
 
 #endif

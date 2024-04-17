@@ -157,7 +157,6 @@ void output_file(int fd, struct dbheader_t* hdr, struct employee_t* empl) {
     lseek(fd, 0, SEEK_SET);
     
     write(fd, hdr, sizeof(struct dbheader_t));
-    printf("[!] Header updated\n");
 
     for (int i = 0; i < realcount; i++) {
         empl[i].hours = htonl(empl[i].hours);
@@ -165,6 +164,17 @@ void output_file(int fd, struct dbheader_t* hdr, struct employee_t* empl) {
     }
 }
 
-int parse_file_header(int fd, int* num_employees_out) {
-    return 0;
+void list_employees(struct dbheader_t* hdr, struct employee_t* empl) {
+    for (int i = 0; i < hdr->employee_count; i++) {
+        printf("Employee %d\n", i);
+        printf("\tName: %s %s\n", empl[i].first_name, empl[i].last_name);
+        printf("\tAddress: %s\n", empl[i].address);
+        printf("\tHours: %d\n", empl[i].hours);
+        printf("\tIs Manager: %d\n", empl[i].is_manager);
+    }
+}
+
+int remove_employee(struct dbheader_t* hdr, struct employee_t* empl, char rm_employee) {
+    printf("%c\n", rm_employee);
+    return STATUS_SUCCESS;
 }

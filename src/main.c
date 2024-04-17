@@ -17,14 +17,16 @@ void print_usage(char* argv[]) {
 int main(int argc, char* argv[]) {
     char *filepath = NULL;
     char *addstring = NULL;
+    char *rm_employee = NULL;
     bool newfile = false;
+    bool list = false;
     int c = 0;
 
     int fd = -1;
     struct dbheader_t* hdr = NULL;
     struct employee_t* empl = NULL;
 
-    while ((c = getopt(argc, argv, "nf:a:")) != -1) {
+    while ((c = getopt(argc, argv, "nf:a:lr:")) != -1) {
         switch (c) {
         case 'n':
             newfile = true;
@@ -34,6 +36,12 @@ int main(int argc, char* argv[]) {
             break;
         case 'a':
             addstring = optarg;
+            break;
+        case 'l':
+            list = true;
+            break;
+        case 'r':
+            rm_employee = optarg;
             break;
         case '?':
             printf("Unknown option -%c\n", c);
@@ -48,6 +56,7 @@ int main(int argc, char* argv[]) {
         print_usage(argv);
         return 0;
     }
+
     if (newfile) {
         fd = create_db_file(filepath);
         if (fd == STATUS_ERROR) {
@@ -79,6 +88,14 @@ int main(int argc, char* argv[]) {
         hdr->employee_count++;
         empl = realloc(empl, hdr->employee_count*(sizeof(struct employee_t)));
         add_employee(hdr, empl, addstring);
+    }
+
+    if (list) {
+        list_employees(hdr, empl);
+    }
+
+    if (rm_employee) {
+       remove_employee(hdr, empl, rm_employee[0]);
     }
 
     output_file(fd, hdr, empl);
