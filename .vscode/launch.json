@@ -6,7 +6,10 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceRoot}/bin/dbview",
-      "args": [],
+      "args": [
+        "-f", "${workspaceRoot}/test.db",
+        "-l"
+      ],
       "stopAtEntry": false,
       "cwd": "${fileDirname}",
       "environment": [],
@@ -23,8 +26,7 @@
               "text": "-gdb-set disassembly-flavor intel",
               "ignoreFailures": true
           }
-      ],
-      // "preLaunchTask": "C: build active file",
+      ]
     }
   ]
 }

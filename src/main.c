@@ -1,31 +1,41 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdbool.h>
 #include <getopt.h>
+#include <unistd.h>
 
+#include "../include/utility.h"
 #include "../include/file.h"
 #include "../include/parse.h"
-#include "../include/common.h"
 
 void print_usage(char* argv[]) {
     printf("Usage: %s -n -f <database file>\n", argv[0]);
     printf("\t -n  -  create new database file\n");
     printf("\t -f  -  (required) path to database file\n");
+    printf("\t -l  -  list all employees\n");
+    printf("\t -r  -  remove employee\n");
     return;
 }
 
 int main(int argc, char* argv[]) {
-    char *filepath = NULL;
-    char *addstring = NULL;
-    char *rm_employee = NULL;
+    // Create a new database (-f <file name>)
     bool newfile = false;
+    char* filepath = NULL;
+
+    // Add a new employee (-a <string>)
+    // Input format: <first name,last name,address,number of hours,is manager>
+    char *addstring = NULL;
+
+    // Remove an employee (-r <index from list>)
+    char *rm_employee = NULL;
+    
+    // List all employees (-l)
     bool list = false;
-    int c = 0;
 
     int fd = -1;
     struct dbheader_t* hdr = NULL;
     struct employee_t* empl = NULL;
 
+    int c = 0;
     while ((c = getopt(argc, argv, "nf:a:lr:")) != -1) {
         switch (c) {
         case 'n':
@@ -81,24 +91,22 @@ int main(int argc, char* argv[]) {
 
     if (read_employees(fd, hdr, &empl) != STATUS_SUCCESS) {
        printf("Failed to read employees");
-       return -1; 
+       return -1;
     }
 
     if (addstring) {
-        hdr->employee_count++;
-        empl = realloc(empl, hdr->employee_count*(sizeof(struct employee_t)));
         add_employee(hdr, empl, addstring);
+    }
+
+    if (rm_employee) {
+        remove_employee(hdr, empl, rm_employee);
     }
 
     if (list) {
         list_employees(hdr, empl);
     }
 
-    if (rm_employee) {
-       remove_employee(hdr, empl, rm_employee[0]);
-    }
-
-    output_file(fd, hdr, empl);
+    save_to_file(fd, hdr, empl);
 
     close(fd);
     return 0;

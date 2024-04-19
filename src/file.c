@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <stdbool.h>
 
+#include "../include/utility.h"
 #include "../include/file.h"
-#include "../include/common.h"
 
 int create_db_file(char* filepath) {
     int fd = open(filepath, O_RDONLY);

@@ -1,28 +1,29 @@
 # Employee Database
 
-To build:
+Simple CLI application to store information about employees into a file.
 
-```bash
-$ make # This adds create a test database with sample data
-$ ./bin/dbview -f <filename> -n
+- Create new files
+- Add/Remove/List employees
+
+## Build
+
+```console
+$ make
+$ make testdb # OR this to add a test database
 ```
 
-To run:
+## Commands
 
-```bash
-$ ./bin/dbview -f <filename>
-```
+```console
+# To create a new database 'employees.db'
+$ ./bin/dbview -f employees.db -n
 
-To add employee:
+# To add employee - the format is FirstName,LastName,Address,NbOfHours,IsManager
+$ ./bin/dbview -f employees.db -a "Joe,Blogg,4 Main Street,5,false"
 
-```bash
-$ ./bin/dbview -f <filename> -a "Joe,Blogg,4 Main Street,5,false"
+# To remove employees
+$ ./bin/dbview -f employees.db -r <index from list>
 
-# Format is FirstName,LastName,Address,NbOfHours,IsManager
-```
-
-To list employees:
-
-```bash
-$ ./bin/dbview -f <filename> -l
+# To list employees
+$ ./bin/dbview -f employees.db -l
 ```

@@ -2,11 +2,14 @@ TARGET = bin/dbview
 SRC = $(wildcard src/*.c)
 OBJ = $(patsubst src/%.c, obj/%.o, $(SRC))
 
-run: clean default
+default: create_folders  $(TARGET)
+
+testdb: default
+		rm -f ./test.db
 		./$(TARGET) -f ./test.db -n
 		./$(TARGET) -f ./test.db -a "Joe,Blogg,4 Main Street,5,false"
-
-default: create_folders $(TARGET)
+		./$(TARGET) -f ./test.db -a "Jill,Jones,6 Main Street,50,true"
+		./$(TARGET) -f ./test.db -a "Martin,Smith,8 Main Street,500,false"
 
 clean:
 		rm -f obj/*.o
