@@ -1,6 +1,7 @@
 #include <getopt.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 #include "file.h"
@@ -97,6 +98,8 @@ int main(int argc, char* argv[])
     }
 
     if (addstring) {
+        hdr->employee_count++;
+        empl = realloc(empl, hdr->employee_count * (sizeof(struct employee_t)));
         add_employee(hdr, empl, addstring);
     }
 

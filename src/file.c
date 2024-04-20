@@ -6,7 +6,7 @@
 #include "file.h"
 #include "utility.h"
 
-int create_db_file(char* filepath)
+int create_db_file(const char* filepath)
 {
     int fd = open(filepath, O_RDONLY);
 
@@ -26,7 +26,7 @@ int create_db_file(char* filepath)
     return fd;
 }
 
-int open_db_file(char* filepath)
+int open_db_file(const char* filepath)
 {
     int fd = open(filepath, O_RDWR, 0644);
 

@@ -5,7 +5,7 @@
       "name": "(gdb) Launch",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceRoot}/bin/dbview",
+      "program": "${workspaceRoot}/bin/employee_database",
       "args": [
         "-f", "${workspaceRoot}/test.db",
         "-l"

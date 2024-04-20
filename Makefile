@@ -1,27 +1,29 @@
-TARGET = bin/dbview
-SRC = $(wildcard src/*.c)
-OBJ = $(patsubst src/%.c, obj/%.o, $(SRC))
+.POSIX:
+.SUFFIXES:
 
-default: create_folders  $(TARGET)
+SHELL = /bin/sh
+TARGET = bin/employee_database
 
-testdb: default
-		rm -f ./test.db
-		./$(TARGET) -f ./test.db -n
-		./$(TARGET) -f ./test.db -a "Joe,Blogg,4 Main Street,5,false"
-		./$(TARGET) -f ./test.db -a "Jill,Jones,6 Main Street,50,true"
-		./$(TARGET) -f ./test.db -a "Martin,Smith,8 Main Street,500,false"
+all: create_folders $(TARGET)
+
+testdb: all
+	rm -f ./resources/test.db
+	./$(TARGET) -f ./resources/test.db -n
+	./$(TARGET) -f ./resources/test.db -a "Joe,Blogg,4 Main Street,5,false"
+	./$(TARGET) -f ./resources/test.db -a "Jill,Jones,6 Main Street,50,true"
+	./$(TARGET) -f ./resources/test.db -a "Martin,Smith,8 Main Street,500,false"
 
 clean:
-		rm -f obj/*.o
-		rm -f bin/*
-		rm -f *.db
-
-$(TARGET): $(OBJ)
-		gcc -o $@ $?
-
-obj/%.o : src/%.c
-		gcc -c $<  -o $@ -Iinclude -g
+	rm -f bin/*
+	rm -f obj/*.o
 
 create_folders:
 	mkdir -p bin
 	mkdir -p obj
+	mkdir -p resources
+
+$(TARGET): $(patsubst src/%.c, obj/%.o, $(wildcard src/*.c))
+	gcc -o $@ $?
+
+obj/%.o : src/%.c
+	gcc -c $<  -o $@ -Iinclude
