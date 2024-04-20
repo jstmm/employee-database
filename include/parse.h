@@ -22,7 +22,7 @@ int create_db_header(int fd, struct dbheader_t**);
 int validate_db_header(int fd, struct dbheader_t**);
 int read_employees(int fd, struct dbheader_t*, struct employee_t**);
 int add_employee(struct dbheader_t*, struct employee_t*, char*);
-int remove_employee(struct dbheader_t*, struct employee_t*, char*);
+int remove_employee(struct dbheader_t*, struct employee_t*, char* employee_to_remove_index);
 void list_employees(struct dbheader_t*, struct employee_t*);
 void save_to_file(int fd, struct dbheader_t*, struct employee_t*);
 

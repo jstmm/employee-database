@@ -1,13 +1,15 @@
-#include <stdio.h>
-#include <unistd.h>
 #include <fcntl.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <unistd.h>
 
-#include "../include/utility.h"
-#include "../include/file.h"
+#include "file.h"
+#include "utility.h"
 
-int create_db_file(char* filepath) {
+int create_db_file(char* filepath)
+{
     int fd = open(filepath, O_RDONLY);
+
     if (fd != -1) {
         close(fd);
         printf("File already exists\n");
@@ -15,6 +17,7 @@ int create_db_file(char* filepath) {
     }
 
     fd = open(filepath, O_RDWR | O_CREAT, 0644);
+
     if (fd == -1) {
         perror("open");
         return STATUS_ERROR;
@@ -23,8 +26,10 @@ int create_db_file(char* filepath) {
     return fd;
 }
 
-int open_db_file(char* filepath) {
+int open_db_file(char* filepath)
+{
     int fd = open(filepath, O_RDWR, 0644);
+
     if (fd == -1) {
         perror("open");
         return STATUS_ERROR;

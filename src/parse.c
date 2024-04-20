@@ -1,42 +1,46 @@
-#include <stdio.h>
-#include <stdbool.h>
-#include <sys/stat.h>
-#include <string.h>
-#include <unistd.h>
-#include <stdlib.h>
 #include <arpa/inet.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
-#include "../include/utility.h"
-#include "../include/parse.h"
+#include "parse.h"
+#include "utility.h"
 
-int create_db_header(int fd, struct dbheader_t** header_out) {
+int create_db_header(int fd, struct dbheader_t** header_out)
+{
     struct dbheader_t* hdr = calloc(1, sizeof(struct dbheader_t));
+
     if (hdr == NULL) {
         printf("Malloc failed to create db header\n");
         return STATUS_ERROR;
     }
+
     hdr->magic = HEADER_MAGIC;
     hdr->version = 0x1;
     hdr->employee_count = 0;
     hdr->file_size = sizeof(struct dbheader_t);
-
     *header_out = hdr;
 
     return STATUS_SUCCESS;
 }
 
-int validate_db_header(int fd, struct dbheader_t** header_out) {
+int validate_db_header(int fd, struct dbheader_t** header_out)
+{
     if (fd < 0) {
         printf("Got a bad FD from the user\n");
         return STATUS_ERROR;
     }
 
     struct dbheader_t* hdr = calloc(1, sizeof(struct dbheader_t));
+
     if (hdr == NULL) {
         printf("Malloc failed create a db header\n");
         return STATUS_ERROR;
     }
-    
+
     if (read(fd, hdr, sizeof(struct dbheader_t)) != sizeof(struct dbheader_t)) {
         perror("read");
         free(hdr);
@@ -53,14 +57,14 @@ int validate_db_header(int fd, struct dbheader_t** header_out) {
         free(hdr);
         return -1;
     }
-    
+
     if (hdr->version != 1) {
         printf("Improper header vesion\n");
         free(hdr);
         return -1;
     }
 
-    struct stat dbstat = {0};
+    struct stat dbstat = { 0 };
     fstat(fd, &dbstat);
     if (hdr->file_size != dbstat.st_size) {
         printf("Corrupted database\n");
@@ -73,15 +77,16 @@ int validate_db_header(int fd, struct dbheader_t** header_out) {
     return STATUS_SUCCESS;
 }
 
-int read_employees(int fd, struct dbheader_t* header, struct employee_t** employee_out) {
+int read_employees(int fd, struct dbheader_t* header, struct employee_t** employee_out)
+{
     if (fd < 0) {
         printf("Got a bad FD from the user\n");
         return STATUS_ERROR;
     }
 
     int count = header->employee_count;
-
     struct employee_t* employees = calloc(count, sizeof(struct employee_t));
+
     if (employees == NULL) {
         printf("Malloc failed\n");
         return STATUS_ERROR;
@@ -98,7 +103,8 @@ int read_employees(int fd, struct dbheader_t* header, struct employee_t** employ
     return STATUS_SUCCESS;
 }
 
-int add_employee(struct dbheader_t* header, struct employee_t* employees, char* addstring) {
+int add_employee(struct dbheader_t* header, struct employee_t* employees, char* addstring)
+{
     header->employee_count++;
     employees = realloc(employees, header->employee_count * (sizeof(struct employee_t)));
     printf("%s\n", addstring);
@@ -119,23 +125,29 @@ int add_employee(struct dbheader_t* header, struct employee_t* employees, char* 
     return STATUS_SUCCESS;
 }
 
-int remove_employee(struct dbheader_t* header, struct employee_t* employees, char* rm_employee) {
-    header->employee_count--;
-    const int employee_i = atoi(rm_employee);
+int remove_employee(struct dbheader_t* header, struct employee_t* employees, char* employee_to_remove_index)
+{
+    const int employee_i = atoi(employee_to_remove_index);
 
-    if (employee_i < 0 || employee_i >= header->employee_count) {
-        printf("Out of bound reference\n"); 
+    if (header->employee_count == 0) {
+        printf("Database empty - nothing to delete\n");
         return STATUS_ERROR;
     }
 
-    memmove(employees, employees + 1, 2 * sizeof(struct employee_t));
+    if (employee_i < 0 || employee_i >= header->employee_count) {
+        printf("Out of bound reference\n");
+        return STATUS_ERROR;
+    }
 
+    header->employee_count--;
+    memmove(employees + employee_i, employees + employee_i + 1, (header->employee_count - employee_i) * sizeof(struct employee_t));
     employees = realloc(employees, header->employee_count * (sizeof(struct employee_t)));
-    
+
     return STATUS_SUCCESS;
 }
 
-void list_employees(struct dbheader_t* header, struct employee_t* employees) {
+void list_employees(struct dbheader_t* header, struct employee_t* employees)
+{
     for (int i = 0; i < header->employee_count; i++) {
         printf("Employee %d\n", i);
         printf("\tName: %s %s\n", employees[i].first_name, employees[i].last_name);
@@ -145,7 +157,8 @@ void list_employees(struct dbheader_t* header, struct employee_t* employees) {
     }
 }
 
-void save_to_file(int fd, struct dbheader_t* header, struct employee_t* employees) {
+void save_to_file(int fd, struct dbheader_t* header, struct employee_t* employees)
+{
     if (fd < 0) {
         printf("Got a bad FD from the user\n");
     }
@@ -163,7 +176,6 @@ void save_to_file(int fd, struct dbheader_t* header, struct employee_t* employee
     }
 
     lseek(fd, 0, SEEK_SET);
-
     write(fd, header, sizeof(struct dbheader_t));
 
     for (int i = 0; i < realcount; i++) {

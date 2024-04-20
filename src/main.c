@@ -1,13 +1,14 @@
-#include <stdio.h>
-#include <stdbool.h>
 #include <getopt.h>
+#include <stdbool.h>
+#include <stdio.h>
 #include <unistd.h>
 
-#include "../include/utility.h"
-#include "../include/file.h"
-#include "../include/parse.h"
+#include "file.h"
+#include "parse.h"
+#include "utility.h"
 
-void print_usage(char* argv[]) {
+void print_usage(char* argv[])
+{
     printf("Usage: %s -n -f <database file>\n", argv[0]);
     printf("\t -n  -  create new database file\n");
     printf("\t -f  -  (required) path to database file\n");
@@ -16,18 +17,19 @@ void print_usage(char* argv[]) {
     return;
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
     // Create a new database (-f <file name>)
     bool newfile = false;
     char* filepath = NULL;
 
     // Add a new employee (-a <string>)
     // Input format: <first name,last name,address,number of hours,is manager>
-    char *addstring = NULL;
+    char* addstring = NULL;
 
     // Remove an employee (-r <index from list>)
-    char *rm_employee = NULL;
-    
+    char* rm_employee = NULL;
+
     // List all employees (-l)
     bool list = false;
 
@@ -90,8 +92,8 @@ int main(int argc, char* argv[]) {
     }
 
     if (read_employees(fd, hdr, &empl) != STATUS_SUCCESS) {
-       printf("Failed to read employees");
-       return -1;
+        printf("Failed to read employees");
+        return -1;
     }
 
     if (addstring) {
@@ -107,7 +109,7 @@ int main(int argc, char* argv[]) {
     }
 
     save_to_file(fd, hdr, empl);
-
     close(fd);
+
     return 0;
 }
