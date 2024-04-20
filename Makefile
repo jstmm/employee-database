@@ -3,10 +3,12 @@
 
 SHELL = /bin/sh
 TARGET = bin/employee_database
+SRC = $(wildcard src/*.c)
+OBJ = $(patsubst src/%.c, obj/%.o, $(SRC))
 
-all: create_folders $(TARGET)
+default: create_folders $(TARGET)
 
-testdb: all
+test: default
 	rm -f ./resources/test.db
 	./$(TARGET) -f ./resources/test.db -n
 	./$(TARGET) -f ./resources/test.db -a "Joe,Blogg,4 Main Street,5,false"
@@ -14,16 +16,15 @@ testdb: all
 	./$(TARGET) -f ./resources/test.db -a "Martin,Smith,8 Main Street,500,false"
 
 clean:
-	rm -f bin/*
+	rm -f $(TARGET)
 	rm -f obj/*.o
 
-create_folders:
-	mkdir -p bin
-	mkdir -p obj
-	mkdir -p resources
-
-$(TARGET): $(patsubst src/%.c, obj/%.o, $(wildcard src/*.c))
+$(TARGET): $(OBJ)
 	gcc -o $@ $?
 
 obj/%.o : src/%.c
-	gcc -c $<  -o $@ -Iinclude
+	gcc -c $< -o $@ -Iinclude
+
+.PHONY: create_folders
+create_folders:
+	mkdir -p bin obj resources

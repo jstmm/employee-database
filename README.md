@@ -9,7 +9,7 @@ Simple CLI application to store information about employees into a file.
 
 ```console
 $ make
-$ make testdb # OR this to add a test database
+$ make test # OR this to create a test database
 ```
 
 ## Commands
