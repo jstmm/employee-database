@@ -15,6 +15,7 @@ void print_usage(char* argv[])
     printf("\t -f  -  (required) path to database file\n");
     printf("\t -l  -  list all employees\n");
     printf("\t -r  -  remove employee\n");
+    printf("\t -s  -  search employee\n");
     return;
 }
 
@@ -31,6 +32,9 @@ int main(int argc, char* argv[])
     // Remove an employee (-r <index from list>)
     char* rm_employee = NULL;
 
+    // Search for an employee by name (-s <employee first or last name>)
+    char* sr_employee = NULL;
+
     // List all employees (-l)
     bool list = false;
 
@@ -39,7 +43,7 @@ int main(int argc, char* argv[])
     struct employee_t* empl = NULL;
 
     int c = 0;
-    while ((c = getopt(argc, argv, "nf:a:lr:")) != -1) {
+    while ((c = getopt(argc, argv, "nf:a:lr:s:")) != -1) {
         switch (c) {
         case 'n':
             newfile = true;
@@ -55,6 +59,9 @@ int main(int argc, char* argv[])
             break;
         case 'r':
             rm_employee = optarg;
+            break;
+        case 's':
+            sr_employee = optarg;
             break;
         case '?':
             printf("Unknown option -%c\n", c);
@@ -105,6 +112,10 @@ int main(int argc, char* argv[])
 
     if (rm_employee) {
         remove_employee(hdr, empl, rm_employee);
+    }
+
+    if (sr_employee) {
+        search_employee(hdr, empl, sr_employee);
     }
 
     if (list) {

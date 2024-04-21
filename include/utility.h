@@ -4,7 +4,7 @@
 #define STATUS_ERROR -1
 #define STATUS_SUCCESS 0
 
-void str_to_lower(char* str);
+char* toLowerCase(const char* str);
 bool parse_boolean(const char* str);
 
 #endif

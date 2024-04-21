@@ -1,31 +1,38 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
-// Function to convert a string to lowercase
-void str_to_lower(char* str)
+char* toLowerCase(const char* str)
 {
-    while (*str) {
-        *str = tolower(*str);
-        str++;
+    size_t len = strlen(str);
+    char* lower = (char*)malloc(len + 1);
+
+    if (lower == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(1);
     }
+
+    for (size_t i = 0; i < len; i++) {
+        lower[i] = tolower(str[i]);
+    }
+    lower[len] = '\0';
+    return lower;
 }
 
-// Function to parse "true" or "false" string to boolean
 bool parse_boolean(const char* str)
 {
-    char lowerStr[10]; // Assuming maximum length of the string is 9 characters
-    strcpy(lowerStr, str);
-    str_to_lower(lowerStr);
+    bool result = false;
+    char* lowerStr = toLowerCase(str);
 
     if (strcmp(lowerStr, "true") == 0) {
-        return true;
+        result = true;
     } else if (strcmp(lowerStr, "false") == 0) {
-        return false;
+        result = false;
     } else {
-        // Handle invalid input
         printf("Invalid input\n");
-        return false; // Or handle error in your desired way
     }
+    free(lowerStr);
+    return result;
 }

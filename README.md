@@ -2,28 +2,32 @@
 
 Simple CLI application to store information about employees into a file.
 
-- Create new files
-- Add/Remove/List employees
+- Create a new database file
+- Add and remove employee records
+- Search or list all employee records
 
 ## Build
 
 ```console
-$ make
-$ make test # OR this to create a test database
+$ make      # OR
+$ make test # to create a test database
 ```
 
 ## Commands
 
 ```console
-# To create a new database 'employees.db'
-$ ./bin/dbview -f employees.db -n
+# To create a new database 'storage.db'
+$ ./bin/employee_database -f storage.db -n
 
 # To add employee - the format is FirstName,LastName,Address,NbOfHours,IsManager
-$ ./bin/dbview -f employees.db -a "Joe,Blogg,4 Main Street,5,false"
+$ ./bin/employee_database -f storage.db -a "Joe,Blogg,4 Main Street,5,false"
 
 # To remove employees
-$ ./bin/dbview -f employees.db -r <index from list>
+$ ./bin/employee_database -f storage.db -r <index from list>
+
+# To search employees by first or last name
+$ ./bin/employee_database -f storage.db -s Blogg
 
 # To list employees
-$ ./bin/dbview -f employees.db -l
+$ ./bin/employee_database -f storage.db -l
 ```

@@ -116,15 +116,15 @@ int add_employee(const struct dbheader_t* header, struct employee_t* employees, 
     strncpy(employees[header->employee_count - 1].address, address, sizeof(employees[header->employee_count - 1].address));
     employees[header->employee_count - 1].hours = atoi(hours);
     employees[header->employee_count - 1].is_manager = parse_boolean(is_manager);
-    
+
     printf("User addded : %s %s %s %s %s\n", first_name, last_name, address, hours, is_manager);
 
     return STATUS_SUCCESS;
 }
 
-int remove_employee(struct dbheader_t* header, struct employee_t* employees, const char* employee_to_remove_index)
+int remove_employee(struct dbheader_t* header, struct employee_t* employees, const char* employee_index)
 {
-    const int employee_i = atoi(employee_to_remove_index);
+    const int employee_i = atoi(employee_index);
 
     if (header->employee_count == 0) {
         printf("Database empty - nothing to delete\n");
@@ -140,6 +140,33 @@ int remove_employee(struct dbheader_t* header, struct employee_t* employees, con
     memmove(employees + employee_i, employees + employee_i + 1, (header->employee_count - employee_i) * sizeof(struct employee_t));
     employees = realloc(employees, header->employee_count * (sizeof(struct employee_t)));
 
+    return STATUS_SUCCESS;
+}
+
+int search_employee(struct dbheader_t* header, struct employee_t* employees, const char* search)
+{
+    bool record_found = false;
+
+    for (int i = 0; i < header->employee_count; i++) {
+        char* fn = toLowerCase(employees[i].first_name);
+        char* ln = toLowerCase(employees[i].last_name);
+        char* search_lc = toLowerCase(search);
+        if (strcmp(fn, search_lc) == 0 || strcmp(ln, search_lc) == 0) {
+            printf("Employee %d\n", i);
+            printf("\tName: %s %s\n", employees[i].first_name, employees[i].last_name);
+            printf("\tAddress: %s\n", employees[i].address);
+            printf("\tHours: %d\n", employees[i].hours);
+            printf("\tIs Manager: %d\n", employees[i].is_manager);
+            record_found = true;
+        }
+        free(fn);
+        free(ln);
+        free(search_lc);
+    }
+
+    if (!record_found) {
+        printf("No record found for \"%s\"\n", search);
+    }
     return STATUS_SUCCESS;
 }
 

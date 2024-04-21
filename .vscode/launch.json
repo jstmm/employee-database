@@ -7,8 +7,9 @@
       "request": "launch",
       "program": "${workspaceRoot}/bin/employee_database",
       "args": [
-        "-f", "${workspaceRoot}/test.db",
-        "-l"
+        "-f", "${workspaceRoot}/resources/test.db",
+        // "-l"
+        "-s", "martin"
       ],
       "stopAtEntry": false,
       "cwd": "${fileDirname}",
